@@ -7,12 +7,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from measurement.models import Sensor, Measurement
-from measurement.serializers import Sensor_serializer, Measurement_serializer
+from measurement.serializers import Sensor_serializer, Measurement_serializer, SensorDetail_serializer
 
 
 # Create your views here.
 
-class SensorView(ListModelMixin, CreateAPIView, UpdateAPIView):
+class SensorView(ListModelMixin, CreateAPIView):
     queryset = Sensor.objects.all()
     serializer_class = Sensor_serializer
 
@@ -22,13 +22,10 @@ class SensorView(ListModelMixin, CreateAPIView, UpdateAPIView):
     def perform_create(self, serializer):
         return serializer.save()
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
 
-
-class SensorDetail(RetrieveAPIView, UpdateAPIView):
+class SensorDetailView(RetrieveAPIView, UpdateAPIView):
     queryset = Sensor.objects.all()
-    serializer_class = Sensor_serializer
+    serializer_class = SensorDetail_serializer
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -52,6 +49,3 @@ class MeasurementView(ListModelMixin, CreateAPIView):
     def perform_create(self, serializer):
         sensor = get_object_or_404(Sensor, id=self.request.data.get('sensor_id'))
         return serializer.save(sensor=sensor)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
